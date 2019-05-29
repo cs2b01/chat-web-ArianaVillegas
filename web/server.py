@@ -16,6 +16,8 @@ def index():
 def static_content(content):
     return render_template(content)
 
+#-------------------USER------------------------------------------------------------------------------------
+
 @app.route('/users', methods = ['POST'])
 def create_user():
     c =  json.loads(request.form['values'])
@@ -66,6 +68,61 @@ def delete_user():
     session = db.getSession(engine)
     user = session.query(entities.User).filter(entities.User.id == id).one()
     session.delete(user)
+    session.commit()
+    return "Deleted User"
+
+#-------------------MESSAGE---------------------------------------------------------------------------------
+
+@app.route('/messages', methods = ['POST'])
+def create_message():
+    c = json.loads(request.form['values'])
+    message = entities.Message(
+        content=c['content'],
+        sent_on=c['sent_on'],
+        user_from_id=c['user_from_id'],
+        user_to_id=c['user_to_id']
+    )
+    session = db.getSession(engine)
+    session.add(message)
+    session.commit()
+    return 'Created Message'
+
+@app.route('/messages/<id>', methods = ['GET'])
+def get_message(id):
+    db_session = db.getSession(engine)
+    messages = db_session.query(entities.Message).filter(entities.Message.id == id)
+    for message in messages:
+        js = json.dumps(message, cls=connector.AlchemyEncoder)
+        return Response(js, status=200, mimetype='application/json')
+
+    message = {'status': 404, 'message': 'Not Found'}
+    return Response(message, status=404, mimetype='application/json')
+
+@app.route('/messages', methods = ['GET'])
+def get_messages():
+    session = db.getSession(engine)
+    dbResponse = session.query(entities.Message)
+    data = dbResponse[:]
+    return Response(json.dumps(data, cls=connector.AlchemyEncoder), mimetype='application/json')
+
+@app.route('/messages', methods = ['PUT'])
+def update_message():
+    session = db.getSession(engine)
+    id = request.form['key']
+    message = session.query(entities.Message).filter(entities.Message.id == id).first()
+    c = json.loads(request.form['values'])
+    for key in c.keys():
+        setattr(message, key, c[key])
+    session.add(message)
+    session.commit()
+    return 'Updated Message'
+
+@app.route('/messages', methods = ['DELETE'])
+def delete_message():
+    id = request.form['key']
+    session = db.getSession(engine)
+    message = session.query(entities.Message).filter(entities.Message.id == id).one()
+    session.delete(message)
     session.commit()
     return "Deleted Message"
 

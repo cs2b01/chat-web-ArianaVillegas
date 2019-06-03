@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask,render_template, request, session, Response, redirect
 from database import connector
 from model import entities
@@ -55,7 +57,7 @@ def update_user():
     session = db.getSession(engine)
     id = request.form['key']
     user = session.query(entities.User).filter(entities.User.id == id).first()
-    c =  json.loads(request.form['values'])
+    c = json.loads(request.form['values'])
     for key in c.keys():
         setattr(user, key, c[key])
     session.add(user)
@@ -78,7 +80,7 @@ def create_message():
     c = json.loads(request.form['values'])
     message = entities.Message(
         content=c['content'],
-        sent_on=c['sent_on'],
+        sent_on=datetime.datetime(2000,2,2),
         user_from_id=c['user_from_id'],
         user_to_id=c['user_to_id']
     )
@@ -100,8 +102,8 @@ def get_message(id):
 
 @app.route('/messages', methods = ['GET'])
 def get_messages():
-    session = db.getSession(engine)
-    dbResponse = session.query(entities.Message)
+    sessionc = db.getSession(engine)
+    dbResponse = sessionc.query(entities.Message)
     data = dbResponse[:]
     return Response(json.dumps(data, cls=connector.AlchemyEncoder), mimetype='application/json')
 
@@ -125,6 +127,24 @@ def delete_message():
     session.delete(message)
     session.commit()
     return "Deleted Message"
+
+@app.route('/authenticate', methods = ['POST'])
+def authenticate():
+    #Get data form request
+    username = request.form['username']
+    password = request.form['password']
+
+    # Look in database
+    db_session = db.getSession(engine)
+
+    try:
+        users = db_session.query(entities.User
+            ).filter(entities.user.username==username
+            ).filter(entities.user.password==password
+            ).one()
+        return render_template("success.html")
+    except:
+        return render_template("fail.html")
 
 if __name__ == '__main__':
     app.secret_key = ".."

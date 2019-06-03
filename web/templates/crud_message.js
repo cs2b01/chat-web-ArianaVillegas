@@ -34,13 +34,14 @@ $(function(){
             dataType: "number",
             allowEditing: false
         }, {
-            dataField: "username"
+            dataField: "content"
         }, {
-            dataField: "name"
+            dataField: "sent_on",
+            dataType: "datetime"
         }, {
-            dataField: "fullname"
+            dataField: "user_from_id"
         }, {
-            dataField: "password"
+            dataField: "user_to_id"
         }, ],
     }).dxDataGrid("instance");
 });

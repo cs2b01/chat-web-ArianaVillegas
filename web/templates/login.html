@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Chat - LOGIN</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>window.jQuery || document.write(decodeURIComponent('%3Cscript src="js/jquery-3.1.0.min.js"%3E%3C/script%3E'))</script>
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.spa.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.common.css" />
+    <link rel="dx-theme" data-theme="generic.light" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.light.css" />
+    <script src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
+    <script src="https://unpkg.com/devextreme-aspnet-data@1.3.0"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+<body>
+    <form method="POST" action="/authenticate" name="formulario">
+      <div>
+        <table>
+          <tr>
+            <td>Username</td>
+            <td><input type="text" name="username" id="username"/></td>
+          </tr>
+          <tr>
+            <td>Password</td>
+            <td><input type="password" name="password" id="password"/></td>
+          </tr>
+          <tr>
+            <td colspan="10"><input type="submit" value="LOGIN" onclick="getData()"/></td>
+          </tr>
+        </table>
+      </div>
+    </form>
+    <script>
+      function getData(){
+        var user = $('#username').val();
+        var pass = $('#password').val();
+        $.ajax({
+          url:'/authenticate',
+          type:'POST',
+          contentType: 'application/json',
+          data = JSON.string({
+            "username":user,
+            "password":pass,
+          }),
+          dataType:'json'
+        })
+        alert(JSON.stringify(obj))({
+          "username":user,
+          "password":pass
+        })
+      }
+    </script>
+</body>
+</html>

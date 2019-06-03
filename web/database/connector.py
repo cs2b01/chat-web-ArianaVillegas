@@ -20,7 +20,6 @@ class Manager:
 
         return session
 
-
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
